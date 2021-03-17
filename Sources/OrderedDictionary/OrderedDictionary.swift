@@ -22,7 +22,20 @@ public struct OrderedDictionary<Key: Hashable, Value> {
         self.keyMaker = keyMaker
     }
     public subscript(key: Key) -> Value? {
-        base[key]
+        get {
+            base[key]
+        }
+        set {
+            switch (base[key], newValue) {
+            case (.none, .some):
+                keys.append(key)
+            case (.some, .none):
+                keys.removeAll { $0 == key }
+            default:
+                break
+            }
+            base[key] = newValue
+        }
     }
 }
 extension OrderedDictionary: Collection {
