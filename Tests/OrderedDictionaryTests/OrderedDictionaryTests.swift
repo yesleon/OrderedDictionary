@@ -6,7 +6,9 @@ final class OrderedDictionaryTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(OrderedDictionary().text, "Hello, World!")
+        var dict = OrderedDictionary<UUID, String>()
+        dict.append(contentsOf: [(UUID(), "a")])
+        print(dict)
     }
 
     static var allTests = [
