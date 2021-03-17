@@ -6,16 +6,20 @@ public struct OrderedDictionary<Key: Hashable, Value> {
     public typealias Element = Value
     private var base: [Key: Value]
     public private(set) var keys: [Key]
-    public init(values: [Value], keyMaker: () -> Key) {
+    private var keyMaker: (Key?) -> Key
+    public init(values: [Value], keyMaker: @escaping (Key?) -> Key) {
         var base = [Key: Value]()
         var keys = [Key]()
+        var previousKey: Key?
         for value in values {
-            let key = keyMaker()
+            let key = keyMaker(previousKey)
             base[key] = value
             keys.append(key)
+            previousKey = key
         }
         self.base = base
         self.keys = keys
+        self.keyMaker = keyMaker
     }
     public subscript(key: Key) -> Value? {
         base[key]
