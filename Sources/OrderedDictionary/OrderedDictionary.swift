@@ -1,28 +1,30 @@
 
 
+public protocol KeyMaking {
+    static func makeKey(isUnique: (Self) -> Bool) -> Self
+}
 
-
-public struct OrderedDictionary<Key: Hashable, Value> {
+public struct OrderedDictionary<Key: Hashable & KeyMaking, Value> {
+    
     public typealias Element = Value
+    
     private var base: [Key: Value]
+    
     public private(set) var keys: [Key]
-    private var keyMaker: (Key?) -> Key
-    private var previousKey: Key?
-    public init(values: [Value], keyMaker: @escaping (Key?) -> Key) {
+    
+    public init(values: [Value]) {
         var base = [Key: Value]()
         var keys = [Key]()
-        var previousKey: Key?
+        
         for value in values {
-            let key = keyMaker(previousKey)
+            let key = Key.makeKey(isUnique: { base[$0] == nil })
             base[key] = value
             keys.append(key)
-            previousKey = key
         }
         self.base = base
         self.keys = keys
-        self.keyMaker = keyMaker
-        self.previousKey = previousKey
     }
+    
     public subscript(key: Key) -> Value? {
         get {
             base[key]
@@ -54,10 +56,9 @@ extension OrderedDictionary: MutableCollection {
             return value
         }
         set {
-            let key = keyMaker(previousKey)
+            let key = Key.makeKey(isUnique: { base[$0] == nil })
             keys[position] = key
             base[key] = newValue
-            previousKey = key
         }
     }
 
@@ -69,3 +70,7 @@ extension OrderedDictionary: MutableCollection {
         keys.endIndex
     }
 }
+
+extension OrderedDictionary: Hashable where Value: Hashable { }
+
+extension OrderedDictionary: Equatable where Value: Equatable { }
