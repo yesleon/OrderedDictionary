@@ -7,6 +7,7 @@ public struct OrderedDictionary<Key: Hashable, Value> {
     private var base: [Key: Value]
     public private(set) var keys: [Key]
     private var keyMaker: (Key?) -> Key
+    private var previousKey: Key?
     public init(values: [Value], keyMaker: @escaping (Key?) -> Key) {
         var base = [Key: Value]()
         var keys = [Key]()
@@ -20,6 +21,7 @@ public struct OrderedDictionary<Key: Hashable, Value> {
         self.base = base
         self.keys = keys
         self.keyMaker = keyMaker
+        self.previousKey = previousKey
     }
     public subscript(key: Key) -> Value? {
         get {
@@ -38,7 +40,7 @@ public struct OrderedDictionary<Key: Hashable, Value> {
         }
     }
 }
-extension OrderedDictionary: Collection {
+extension OrderedDictionary: MutableCollection {
     
     public func index(after i: Int) -> Int {
         precondition(i < endIndex, "Can't advance beyond endIndex")
@@ -46,11 +48,17 @@ extension OrderedDictionary: Collection {
     }
 
     public subscript(position: Int) -> Element {
-        
-        let key = keys[position]
-        let value = base[key]!
-        return value
-        
+        get {
+            let key = keys[position]
+            let value = base[key]!
+            return value
+        }
+        set {
+            let key = keyMaker(previousKey)
+            keys[position] = key
+            base[key] = newValue
+            previousKey = key
+        }
     }
 
     public var startIndex: Int {
