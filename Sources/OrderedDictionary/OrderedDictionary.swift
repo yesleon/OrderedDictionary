@@ -78,3 +78,17 @@ extension OrderedDictionary: MutableCollection {
 extension OrderedDictionary: Hashable where Value: Hashable { }
 
 extension OrderedDictionary: Equatable where Value: Equatable { }
+
+extension OrderedDictionary: RangeReplaceableCollection {
+    
+    public init() {
+        self.init([])
+    }
+    
+    public mutating func append(_ newElement: Value) {
+        
+        let key = Key.makeKey(isUnique: { base[$0] == nil })
+        keys.append(key)
+        base[key] = newElement
+    }
+}
