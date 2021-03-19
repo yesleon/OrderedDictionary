@@ -82,7 +82,7 @@ extension OrderedDictionary: Equatable where Value: Equatable { }
 extension OrderedDictionary: RangeReplaceableCollection {
     
     public init() {
-        self.init([])
+        self.init(values: [])
     }
     
     public mutating func append(_ newElement: Value) {
