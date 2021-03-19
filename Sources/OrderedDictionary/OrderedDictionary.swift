@@ -12,6 +12,10 @@ public struct OrderedDictionary<Key: Hashable & KeyMaking, Value> {
     
     public private(set) var keys: [Key]
     
+    public var values: [Value] {
+        keys.map { base[$0]! }
+    }
+    
     public init(values: [Value]) {
         var base = [Key: Value]()
         var keys = [Key]()
